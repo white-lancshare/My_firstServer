@@ -1,6 +1,6 @@
 const database=require('../model/database.json')
 const fs=require('fs')
-const user=require('../model/users')
+const user = require('../model/users')
 console.log(database)
 
 const saveData= (data)=>{
@@ -53,54 +53,68 @@ const createUser= async (req,res)=>{
   res.status(200).send('user created sucessfully')
 }
 
-const alluser=(req,res)=>{  
- const data=database 
- res.status(200).json(data)
+const alluser=async(req,res)=>{  
+ const data= await user.find()
+return res.status(200).json(data)
 }
 
-const getUser=(req,res)=>{
+const getUser=async (req,res)=>{
+  try{
   const input=req.params.id
-  const user=database.find((el)=>{
-   return  el.id==input
-  })
-  if(user===undefined){
+  // const user=database.find((el)=>{
+  //  return  el.id==input
+  // })
+
+  const data= await user.findById(input)
+  if(data===null){
    return  res.status(404).send('user not found')
   } else{
-  res.status(200).json(user)
+  res.status(200).json(data)
   }
+}catch(err){
+  res.status(404).send('user not found')
+}
 }
 const deleteUser=async (req,res)=>{
   const id=req.params.id
-  const user=database.findIndex((el)=>{
-  return  el.id==id
-  })
-  if(user===-1){
+  // const user=database.findIndex((el)=>{
+  // return  el.id==id
+  // })
+ const data=await user.findByIdAndDelete(id)
+
+  if(data===null){
    return  res.status(404).send('user not found in the database')
   } else{
-    database.splice(user,1)
+    // database.splice(user,1)
   res.status(200).send('user have been deleted sucessfully')
   }
-  await saveData(JSON.stringify(database,null,2))
+  // await saveData(JSON.stringify(database,null,2))
 }
 
 const updateUser=async(req,res)=>{
   const id=req.params.id
-  const request=req.body
-  const user=database.find((el)=>{
-    return el.id==id
-  })
-  if(user===undefined){
+  const {name,Age}=req.body
+  // const user=database.find((el)=>{
+  //   return el.id==id
+  // })
+  //   const data={
+  // name:request.name,
+  //   gender:request.gender
+  // }
+  const data=await user.findByIdAndUpdate(
+    id,
+    {name,Age},
+    {new:true,runValidators:true}
+  )
+  if(!data){
     return res.status(404).send('user not found')
   }
-  const data={
-    name:request.name,
-    gender:request.gender
-  }
-  user.name=data.name||user.name
-  user.gender=data.gender||user.gender
+
+  // user.name=data.name||user.name
+  // user.gender=data.gender||user.gender
   
-  await saveData(JSON.stringify(database,null,2))
-  res.status(200).send('name has been updated')
+  // await saveData(JSON.stringify(database,null,2))
+  res.status(200).json(data)
 }
 
 module.exports={createUser,alluser,getUser,deleteUser,updateUser,logData}

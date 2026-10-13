@@ -1,11 +1,16 @@
 const mongoose=require('mongoose');
-mongoose.connect("mongodb+srv://paulegbeme3_db_user:paulegbeme3_db_user2010@cluster0.e7alg39.mongodb.net/myApp")
-.then(()=>{
+// mongoose.connect("mongodb+srv://paulegbeme3_db_user:paulegbeme3_db_user2010@cluster0.e7alg39.mongodb.net/myApp")
+// .then(()=>{
+// console.log('connected sucessfuly')
+// }).catch((error)=>{
+//     console.log('connection failed',error.message)
+// })
+
+mongoose.connect("mongodb://localhost:27017/users").then(()=>{
 console.log('connected sucessfuly')
 }).catch((error)=>{
     console.log('connection failed',error.message)
 })
-
 const UserSchema=mongoose.Schema({
     name:String,
     email:String,
